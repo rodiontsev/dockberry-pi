@@ -1,0 +1,30 @@
+services:
+  pihole:
+    image: "pihole/pihole:2024.07.0"
+    container_name: "pihole"
+    user: "${PUID}:${PGID}"
+    ports:
+      - "53:53/tcp"
+      - "53:53/udp"
+      - "80:80/tcp"
+    volumes:
+      - "${DOCKER_DIR}/pihole/etc/pihole:/etc/pihole"
+      - "${DOCKER_DIR}/pihole/etc/dnsmasq.d:/etc/dnsmasq.d"
+    environment:
+      TZ: "${TZ}"
+      WEBPASSWORD: "${PIHOLE_WEBPASSWORD}"
+      DHCP_ACTIVE: false
+      PIHOLE_DNS_: "1.1.1.1;1.0.0.1"
+      PIHOLE_UID: "${PUID}"
+      PIHOLE_GID: "${PGID}"
+      FTLCONF_REPLY_ADDR4: "${PIHOLE_IP}"
+      FTLCONF_MAXDBDAYS: "30"
+      FTLCONF_DBINTERVAL: "5.0"
+      WEBLOGS_STDOUT: "1"
+    networks:
+      - "pi-net"
+    cap_add:
+      - NET_ADMIN
+    dns:
+      - "127.0.0.1"
+    restart: unless-stopped
